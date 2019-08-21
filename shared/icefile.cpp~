@@ -1,0 +1,63 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower   *
+ *   icecubeflower@yahoo.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+//stuff for interacting with files, all my structures are going to use these functions,
+//I'll keep moving more file functions here
+
+#include "icefile.h"
+
+void namegrabber(string &strfun, ifstream &grabfile)
+{
+   int ix;
+   int ival;
+
+   ix=strfun.length();
+   ival=strfun.length();
+
+   do
+   {
+      strfun+=grabfile.get();
+      ix+=1;
+   }while(grabfile.eof()==false&&strfun[ix-1]!='X'&&ix<14+ival);
+   if(ix<14+ival||strfun[13+ival]==' ')
+      strfun.resize(ix-1);
+
+   if(strfun.length()==ival)
+      strfun="";
+}
+
+void namewriter(string strval, ofstream &outfile)
+{
+   while(strval.length()<14)
+      strval+=' ';
+   outfile<<strval;
+}
+
+//has nothing to do with files, takes string, subtracts ival chars from the front and chops off extension
+void extract(string strvictim, string &strextract, int ival)
+{
+   strextract="";
+
+   while(ival<strvictim.length()&&strvictim[ival]!='.'&&strvictim[ival]!=' ')
+   {
+      strextract+=strvictim[ival];
+      ival+=1;
+   }
+}

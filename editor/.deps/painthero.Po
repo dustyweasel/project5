@@ -1,0 +1,741 @@
+painthero.o: painthero.cpp ice_edit.h /usr/local/include/guichan.hpp \
+  /usr/local/include/guichan/actionevent.hpp \
+  /usr/local/include/guichan/event.hpp \
+  /usr/local/include/guichan/platform.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/string \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++config.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/os_defines.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+  /usr/include/gnu/stubs-32.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/cpu_defines.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stringfwd.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/char_traits.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_algobase.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cstddef \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/include/stddef.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/functexcept.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/exception_defines.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/cpp_type_traits.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/type_traits.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/numeric_traits.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_pair.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_move.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/concept_check.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_iterator_base_types.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_iterator_base_funcs.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_iterator.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/debug/debug.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/postypes.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cwchar \
+  /usr/include/wchar.h /usr/include/stdio.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/include/stdarg.h \
+  /usr/include/bits/wchar.h /usr/include/xlocale.h /usr/include/stdint.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cstdio \
+  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+  /usr/include/libio.h /usr/include/_G_config.h \
+  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+  /usr/include/bits/stdio.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/allocator.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++allocator.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/new_allocator.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/new \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/exception \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/localefwd.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++locale.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/clocale \
+  /usr/include/locale.h /usr/include/bits/locale.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/iosfwd \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cctype \
+  /usr/include/ctype.h /usr/include/endian.h /usr/include/bits/endian.h \
+  /usr/include/bits/byteswap.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/ostream_insert.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cxxabi-forced.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_function.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/backward/binders.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_string.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/atomicity.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/gthr.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/gthr-default.h \
+  /usr/include/pthread.h /usr/include/sched.h /usr/include/time.h \
+  /usr/include/bits/sched.h /usr/include/bits/time.h \
+  /usr/include/signal.h /usr/include/bits/sigset.h \
+  /usr/include/bits/pthreadtypes.h /usr/include/bits/setjmp.h \
+  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
+  /usr/include/bits/environments.h /usr/include/bits/confname.h \
+  /usr/include/getopt.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/atomic_word.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_string.tcc \
+  /usr/local/include/guichan/actionlistener.hpp \
+  /usr/local/include/guichan/cliprectangle.hpp \
+  /usr/local/include/guichan/rectangle.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/iostream \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ostream \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ios \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/ios_base.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_classes.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_classes.tcc \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/streambuf \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/streambuf.tcc \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_ios.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_facets.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cwctype \
+  /usr/include/wctype.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/ctype_base.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/streambuf_iterator.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/ctype_inline.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_facets.tcc \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_ios.tcc \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/ostream.tcc \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/istream \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/istream.tcc \
+  /usr/local/include/guichan/color.hpp \
+  /usr/local/include/guichan/deathlistener.hpp \
+  /usr/local/include/guichan/exception.hpp \
+  /usr/local/include/guichan/focushandler.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/vector \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_construct.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_uninitialized.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_vector.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_bvector.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/vector.tcc \
+  /usr/local/include/guichan/focuslistener.hpp \
+  /usr/local/include/guichan/font.hpp \
+  /usr/local/include/guichan/genericinput.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/queue \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/deque \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_deque.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/deque.tcc \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_heap.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_queue.h \
+  /usr/local/include/guichan/input.hpp \
+  /usr/local/include/guichan/keyinput.hpp \
+  /usr/local/include/guichan/key.hpp \
+  /usr/local/include/guichan/mouseinput.hpp \
+  /usr/local/include/guichan/graphics.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/stack \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_stack.h \
+  /usr/local/include/guichan/gui.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/list \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_list.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/list.tcc \
+  /usr/local/include/guichan/keyevent.hpp \
+  /usr/local/include/guichan/inputevent.hpp \
+  /usr/local/include/guichan/mouseevent.hpp \
+  /usr/local/include/guichan/image.hpp \
+  /usr/local/include/guichan/imagefont.hpp \
+  /usr/local/include/guichan/imageloader.hpp \
+  /usr/local/include/guichan/keylistener.hpp \
+  /usr/local/include/guichan/listmodel.hpp \
+  /usr/local/include/guichan/mouselistener.hpp \
+  /usr/local/include/guichan/selectionevent.hpp \
+  /usr/local/include/guichan/selectionlistener.hpp \
+  /usr/local/include/guichan/widget.hpp \
+  /usr/local/include/guichan/widgetlistener.hpp \
+  /usr/local/include/guichan/widgets/button.hpp \
+  /usr/local/include/guichan/widgets/checkbox.hpp \
+  /usr/local/include/guichan/widgets/container.hpp \
+  /usr/local/include/guichan/basiccontainer.hpp \
+  /usr/local/include/guichan/widgets/dropdown.hpp \
+  /usr/local/include/guichan/widgets/listbox.hpp \
+  /usr/local/include/guichan/widgets/scrollarea.hpp \
+  /usr/local/include/guichan/widgets/icon.hpp \
+  /usr/local/include/guichan/widgets/imagebutton.hpp \
+  /usr/local/include/guichan/widgets/label.hpp \
+  /usr/local/include/guichan/widgets/slider.hpp \
+  /usr/local/include/guichan/widgets/radiobutton.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/map \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_tree.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_map.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_multimap.h \
+  /usr/local/include/guichan/widgets/tab.hpp \
+  /usr/local/include/guichan/widgets/tabbedarea.hpp \
+  /usr/local/include/guichan/widgets/textbox.hpp \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ctime \
+  /usr/local/include/guichan/widgets/textfield.hpp \
+  /usr/local/include/guichan/widgets/window.hpp \
+  /usr/local/include/guichan/platform.hpp \
+  /usr/local/include/guichan/sdl.hpp \
+  /usr/local/include/guichan/sdl/sdlgraphics.hpp /usr/include/SDL/SDL.h \
+  /usr/include/SDL/SDL_main.h /usr/include/SDL/SDL_stdinc.h \
+  /usr/include/SDL/SDL_config.h /usr/include/SDL/SDL_platform.h \
+  /usr/include/sys/types.h /usr/include/sys/select.h \
+  /usr/include/bits/select.h /usr/include/sys/sysmacros.h \
+  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+  /usr/include/bits/waitstatus.h /usr/include/alloca.h \
+  /usr/include/string.h /usr/include/strings.h /usr/include/inttypes.h \
+  /usr/include/iconv.h /usr/include/SDL/begin_code.h \
+  /usr/include/SDL/close_code.h /usr/include/SDL/SDL_audio.h \
+  /usr/include/SDL/SDL_error.h /usr/include/SDL/SDL_endian.h \
+  /usr/include/SDL/SDL_mutex.h /usr/include/SDL/SDL_thread.h \
+  /usr/include/SDL/SDL_rwops.h /usr/include/SDL/SDL_cdrom.h \
+  /usr/include/SDL/SDL_cpuinfo.h /usr/include/SDL/SDL_events.h \
+  /usr/include/SDL/SDL_active.h /usr/include/SDL/SDL_keyboard.h \
+  /usr/include/SDL/SDL_keysym.h /usr/include/SDL/SDL_mouse.h \
+  /usr/include/SDL/SDL_video.h /usr/include/SDL/SDL_joystick.h \
+  /usr/include/SDL/SDL_quit.h /usr/include/SDL/SDL_loadso.h \
+  /usr/include/SDL/SDL_timer.h /usr/include/SDL/SDL_version.h \
+  /usr/local/include/guichan/sdl/sdlimage.hpp \
+  /usr/local/include/guichan/sdl/sdlimageloader.hpp \
+  /usr/local/include/guichan/sdl/sdlinput.hpp \
+  /usr/local/include/guichan/platform.hpp \
+  /usr/local/include/guichan/opengl.hpp \
+  /usr/local/include/guichan/opengl/openglgraphics.hpp \
+  /usr/local/include/guichan/opengl/openglimage.hpp /usr/include/GL/gl.h \
+  /usr/include/GL/glext.h \
+  /usr/local/include/guichan/opengl/openglsdlimageloader.hpp \
+  ../../src/shared/MapBox.h ../../src/shared/Gizbox.h \
+  ../../src/shared/Gizmo.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/fstream \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/codecvt.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/basic_file.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++io.h \
+  /usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/fstream.tcc \
+  ../../src/shared/TexBox.h ../../src/shared/Picloader.h \
+  /usr/include/GL/glu.h /usr/include/SDL/SDL_image.h \
+  /usr/include/SDL/SDL.h ../../src/shared/switchmaster.h \
+  ../../src/shared/soundmaster.h /usr/include/SDL/SDL_mixer.h \
+  /usr/include/SDL/SDL_types.h ../../src/shared/icegrid.h \
+  ../../src/shared/filechecker.h /usr/include/sys/stat.h \
+  /usr/include/bits/stat.h ../../src/shared/icedistance.h \
+  /usr/include/math.h /usr/include/bits/huge_val.h \
+  /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
+  /usr/include/bits/inf.h /usr/include/bits/nan.h \
+  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
+  /usr/include/bits/mathinline.h ../../src/shared/Bomb.h \
+  ../../src/shared/animate.h ../../src/shared/SpecBox.h \
+  ../../src/shared/Picstack.h ../../src/shared/paintmap.h \
+  ../../src/shared/MapBox.h ../../src/shared/printify.h \
+  ../../src/shared/paintblocks.h ../../src/shared/keygrabber.h
+
+ice_edit.h:
+
+/usr/local/include/guichan.hpp:
+
+/usr/local/include/guichan/actionevent.hpp:
+
+/usr/local/include/guichan/event.hpp:
+
+/usr/local/include/guichan/platform.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/string:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++config.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/os_defines.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-32.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/cpu_defines.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stringfwd.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/char_traits.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_algobase.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cstddef:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/include/stddef.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/functexcept.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/exception_defines.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/cpp_type_traits.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/type_traits.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/numeric_traits.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_pair.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_move.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/concept_check.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_iterator_base_types.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_iterator_base_funcs.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_iterator.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/debug/debug.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/postypes.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cwchar:
+
+/usr/include/wchar.h:
+
+/usr/include/stdio.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/include/stdarg.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/stdint.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cstdio:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/allocator.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++allocator.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/new_allocator.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/new:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/exception:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/localefwd.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++locale.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/clocale:
+
+/usr/include/locale.h:
+
+/usr/include/bits/locale.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/iosfwd:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cctype:
+
+/usr/include/ctype.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/bits/byteswap.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/ostream_insert.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cxxabi-forced.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_function.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/backward/binders.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_string.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ext/atomicity.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/gthr.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/gthr-default.h:
+
+/usr/include/pthread.h:
+
+/usr/include/sched.h:
+
+/usr/include/time.h:
+
+/usr/include/bits/sched.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/signal.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/bits/setjmp.h:
+
+/usr/include/unistd.h:
+
+/usr/include/bits/posix_opt.h:
+
+/usr/include/bits/environments.h:
+
+/usr/include/bits/confname.h:
+
+/usr/include/getopt.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/atomic_word.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_string.tcc:
+
+/usr/local/include/guichan/actionlistener.hpp:
+
+/usr/local/include/guichan/cliprectangle.hpp:
+
+/usr/local/include/guichan/rectangle.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/iostream:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ostream:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ios:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/ios_base.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_classes.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_classes.tcc:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/streambuf:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/streambuf.tcc:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_ios.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_facets.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/cwctype:
+
+/usr/include/wctype.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/ctype_base.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/streambuf_iterator.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/ctype_inline.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/locale_facets.tcc:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/basic_ios.tcc:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/ostream.tcc:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/istream:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/istream.tcc:
+
+/usr/local/include/guichan/color.hpp:
+
+/usr/local/include/guichan/deathlistener.hpp:
+
+/usr/local/include/guichan/exception.hpp:
+
+/usr/local/include/guichan/focushandler.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/vector:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_construct.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_uninitialized.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_vector.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_bvector.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/vector.tcc:
+
+/usr/local/include/guichan/focuslistener.hpp:
+
+/usr/local/include/guichan/font.hpp:
+
+/usr/local/include/guichan/genericinput.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/queue:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/deque:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_deque.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/deque.tcc:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_heap.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_queue.h:
+
+/usr/local/include/guichan/input.hpp:
+
+/usr/local/include/guichan/keyinput.hpp:
+
+/usr/local/include/guichan/key.hpp:
+
+/usr/local/include/guichan/mouseinput.hpp:
+
+/usr/local/include/guichan/graphics.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/stack:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_stack.h:
+
+/usr/local/include/guichan/gui.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/list:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_list.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/list.tcc:
+
+/usr/local/include/guichan/keyevent.hpp:
+
+/usr/local/include/guichan/inputevent.hpp:
+
+/usr/local/include/guichan/mouseevent.hpp:
+
+/usr/local/include/guichan/image.hpp:
+
+/usr/local/include/guichan/imagefont.hpp:
+
+/usr/local/include/guichan/imageloader.hpp:
+
+/usr/local/include/guichan/keylistener.hpp:
+
+/usr/local/include/guichan/listmodel.hpp:
+
+/usr/local/include/guichan/mouselistener.hpp:
+
+/usr/local/include/guichan/selectionevent.hpp:
+
+/usr/local/include/guichan/selectionlistener.hpp:
+
+/usr/local/include/guichan/widget.hpp:
+
+/usr/local/include/guichan/widgetlistener.hpp:
+
+/usr/local/include/guichan/widgets/button.hpp:
+
+/usr/local/include/guichan/widgets/checkbox.hpp:
+
+/usr/local/include/guichan/widgets/container.hpp:
+
+/usr/local/include/guichan/basiccontainer.hpp:
+
+/usr/local/include/guichan/widgets/dropdown.hpp:
+
+/usr/local/include/guichan/widgets/listbox.hpp:
+
+/usr/local/include/guichan/widgets/scrollarea.hpp:
+
+/usr/local/include/guichan/widgets/icon.hpp:
+
+/usr/local/include/guichan/widgets/imagebutton.hpp:
+
+/usr/local/include/guichan/widgets/label.hpp:
+
+/usr/local/include/guichan/widgets/slider.hpp:
+
+/usr/local/include/guichan/widgets/radiobutton.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/map:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_tree.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_map.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/stl_multimap.h:
+
+/usr/local/include/guichan/widgets/tab.hpp:
+
+/usr/local/include/guichan/widgets/tabbedarea.hpp:
+
+/usr/local/include/guichan/widgets/textbox.hpp:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/ctime:
+
+/usr/local/include/guichan/widgets/textfield.hpp:
+
+/usr/local/include/guichan/widgets/window.hpp:
+
+/usr/local/include/guichan/platform.hpp:
+
+/usr/local/include/guichan/sdl.hpp:
+
+/usr/local/include/guichan/sdl/sdlgraphics.hpp:
+
+/usr/include/SDL/SDL.h:
+
+/usr/include/SDL/SDL_main.h:
+
+/usr/include/SDL/SDL_stdinc.h:
+
+/usr/include/SDL/SDL_config.h:
+
+/usr/include/SDL/SDL_platform.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+/usr/include/alloca.h:
+
+/usr/include/string.h:
+
+/usr/include/strings.h:
+
+/usr/include/inttypes.h:
+
+/usr/include/iconv.h:
+
+/usr/include/SDL/begin_code.h:
+
+/usr/include/SDL/close_code.h:
+
+/usr/include/SDL/SDL_audio.h:
+
+/usr/include/SDL/SDL_error.h:
+
+/usr/include/SDL/SDL_endian.h:
+
+/usr/include/SDL/SDL_mutex.h:
+
+/usr/include/SDL/SDL_thread.h:
+
+/usr/include/SDL/SDL_rwops.h:
+
+/usr/include/SDL/SDL_cdrom.h:
+
+/usr/include/SDL/SDL_cpuinfo.h:
+
+/usr/include/SDL/SDL_events.h:
+
+/usr/include/SDL/SDL_active.h:
+
+/usr/include/SDL/SDL_keyboard.h:
+
+/usr/include/SDL/SDL_keysym.h:
+
+/usr/include/SDL/SDL_mouse.h:
+
+/usr/include/SDL/SDL_video.h:
+
+/usr/include/SDL/SDL_joystick.h:
+
+/usr/include/SDL/SDL_quit.h:
+
+/usr/include/SDL/SDL_loadso.h:
+
+/usr/include/SDL/SDL_timer.h:
+
+/usr/include/SDL/SDL_version.h:
+
+/usr/local/include/guichan/sdl/sdlimage.hpp:
+
+/usr/local/include/guichan/sdl/sdlimageloader.hpp:
+
+/usr/local/include/guichan/sdl/sdlinput.hpp:
+
+/usr/local/include/guichan/platform.hpp:
+
+/usr/local/include/guichan/opengl.hpp:
+
+/usr/local/include/guichan/opengl/openglgraphics.hpp:
+
+/usr/local/include/guichan/opengl/openglimage.hpp:
+
+/usr/include/GL/gl.h:
+
+/usr/include/GL/glext.h:
+
+/usr/local/include/guichan/opengl/openglsdlimageloader.hpp:
+
+../../src/shared/MapBox.h:
+
+../../src/shared/Gizbox.h:
+
+../../src/shared/Gizmo.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/fstream:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/codecvt.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/basic_file.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/i486-slackware-linux/bits/c++io.h:
+
+/usr/lib/gcc/i486-slackware-linux/4.3.3/../../../../include/c++/4.3.3/bits/fstream.tcc:
+
+../../src/shared/TexBox.h:
+
+../../src/shared/Picloader.h:
+
+/usr/include/GL/glu.h:
+
+/usr/include/SDL/SDL_image.h:
+
+/usr/include/SDL/SDL.h:
+
+../../src/shared/switchmaster.h:
+
+../../src/shared/soundmaster.h:
+
+/usr/include/SDL/SDL_mixer.h:
+
+/usr/include/SDL/SDL_types.h:
+
+../../src/shared/icegrid.h:
+
+../../src/shared/filechecker.h:
+
+/usr/include/sys/stat.h:
+
+/usr/include/bits/stat.h:
+
+../../src/shared/icedistance.h:
+
+/usr/include/math.h:
+
+/usr/include/bits/huge_val.h:
+
+/usr/include/bits/huge_valf.h:
+
+/usr/include/bits/huge_vall.h:
+
+/usr/include/bits/inf.h:
+
+/usr/include/bits/nan.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/mathcalls.h:
+
+/usr/include/bits/mathinline.h:
+
+../../src/shared/Bomb.h:
+
+../../src/shared/animate.h:
+
+../../src/shared/SpecBox.h:
+
+../../src/shared/Picstack.h:
+
+../../src/shared/paintmap.h:
+
+../../src/shared/MapBox.h:
+
+../../src/shared/printify.h:
+
+../../src/shared/paintblocks.h:
+
+../../src/shared/keygrabber.h:

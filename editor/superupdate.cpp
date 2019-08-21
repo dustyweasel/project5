@@ -1,0 +1,139 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower   *
+ *   icecubeflower@yahoo.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include "ice_edit.h"
+
+void EditBox::tickmaster(SDL_Event &event)
+{
+  Uint32 history;  //how much time has passed since last update
+  float subVert;
+  float subHor;
+
+  history=SDL_GetTicks()-elticko;
+  elticko=SDL_GetTicks();
+
+  if(ifade>0)
+    ifade-=history;
+
+  switch(istate)  //another switch(istate) to execute every cycle
+  {
+/////////////////////////////////////istate==0 menu//////////////////////////////////////////////////
+  case 0:
+    icemap.UpdateAniLayers(elticko);
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==2 newmap////////////////////////////////////////////////////
+  case 2:
+    break;
+/////////////////////////////////////istate==3 loadscreen////////////////////////////////////////////////////
+  case 3:
+    break;
+/////////////////////////////////////istate==8 menuless block edit////////////////////////////////////////////////////
+  case 8:
+    icemap.UpdateAniLayers(elticko);
+    icemap.Set_Element(hero.GetVert()/16,hero.GetHor()/16,iceout);
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==9 mouse edit////////////////////////////////////////////////////
+  case 9:
+    icemap.UpdateAniLayers(elticko);
+    //if(event.motion.x<=1024*icemap.Get_Columns()&&event.motion.y<=768*icemap.Get_Rows())
+    //{
+      MouseScroll(event,history,icemap);
+      ///////////////////
+   /*   if(icemap.Get_Columns()*16<mWidth)
+        subHor=hero.GetHor()-(mWidth-icemap.Get_Columns()*16)/2;
+      else
+        subHor=hero.GetHor();
+      if(icemap.Get_Rows()*16<mHeight)
+        subVert=hero.GetVert()-(mHeight-icemap.Get_Rows()*16)/2;
+      else
+        subVert=hero.GetVert();*/
+///////////////////////////////
+      icemap.Set_Element(hero.GetVert()/16,hero.GetHor()/16,iceout);
+      //icemap.Set_Element(subVert/16,subHor/16,iceout);
+    //}
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==10 mouse////////////////////////////////////////////////////
+  case 10:
+    icemap.UpdateAniLayers(elticko);
+    if(event.motion.x<=1024*icemap.Get_Columns()&&event.motion.y<=768*icemap.Get_Rows())
+      MouseScroll(event,history,icemap);
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==11 side links////////////////////////////////////////////////////
+  case 11:
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==12 cave links////////////////////////////////////////////////////
+  case 12:
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==13 pick warp point////////////////////////////////////////////////////
+  case 13:
+    if(event.motion.x<=1024*hackmap.Get_Columns()&&event.motion.y<=768*hackmap.Get_Rows())
+      MouseScroll(event,history,hackmap);
+    break;
+/////////////////////////////////////istate==14 edit gizmos////////////////////////////////////////////////////
+  case 14:
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==15 add gizmos////////////////////////////////////////////////////
+  case 15:
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+/////////////////////////////////////istate==16 pick spawn point////////////////////////////////////////////////////
+  case 16:
+    if(event.motion.x<=1024*icemap.Get_Columns()&&event.motion.y<=768*icemap.Get_Rows())
+      MouseScroll(event,history,icemap);
+    icemap.UpdateMonsters(&hero,history,picbox,boombox);
+    break;
+///////////////////////////////////////istate==17 add layers/////////////////////////
+  case 17:
+    icemap.UpdateAniLayers(elticko);
+    break;
+  }
+}
+
+void EditBox::MouseScroll(SDL_Event &event, Uint32 history, MapBox& scrollmap)
+{
+  /*if(event.motion.x/16==63&&fx<(scrollmap.Get_Columns()-1)*1024)
+    fx+=history;  //causes map to scroll off screen and get fx==-4 and stuff but who cares 
+  else if(event.motion.x/16==0&&fx>0&&event.motion.x!=0)
+    fx-=history;
+  if(event.motion.y/16==47&&fy<(scrollmap.Get_Rows()-1)*768)
+    fy+=history;
+  else if(event.motion.y/16==0&&fy>0&&event.motion.y!=0)
+    fy-=history;
+  scrollmap.WarpGiz(hero,event.motion.x+fx,event.motion.y+fy,0,true);*/
+
+  //if(event.motion.x/16==mWidth/16-1&&fx<(scrollmap.Get_Columns()/64-1)*mWidth)
+  if(event.motion.x/16==mWidth/16-1&&fx<(scrollmap.Get_Columns()*16)%mWidth+(scrollmap.Get_Columns()*16/mWidth-1)*mWidth)
+    fx+=history;
+  else if(event.motion.x/16==0&&fx>0&&event.motion.x!=0)
+    fx-=history;
+  //if(event.motion.y/16==mHeight/16-1&&fy<(scrollmap.Get_Rows()/48-1)*mHeight)
+  if(event.motion.y/16==mHeight/16-1&&fy<(scrollmap.Get_Rows()*16)%mHeight+(scrollmap.Get_Rows()*16/mHeight-1)*mHeight)
+    fy+=history;
+  else if(event.motion.y/16==0&&fy>0&&event.motion.y!=0)
+    fy-=history;
+  scrollmap.WarpGiz(hero,event.motion.x+fx,event.motion.y+fy,0,true);
+}

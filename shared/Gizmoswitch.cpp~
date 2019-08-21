@@ -1,0 +1,360 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower   *
+ *   icecubeflower@yahoo.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+//everything with special cases for different Gizmos that is unrelated to drawing goes here,
+//see Gizmo.h
+
+#include "Gizmo.h"
+
+bool Gizmo::Switcher(int inum)
+{
+   bool breturn=true;
+
+   switch(inum)
+   {
+   case 0:
+      ipics=60;
+      idewey[0]=0;  //1st movement sprite
+      idewey[1]=8;  //#of movement sprites per direction
+      idewey[2]=36; //1st attack sprite
+      idewey[3]=6;  //#of attack sprites per direction
+      idewey[4]=32; //1st death sprite
+      idewey[5]=35; //last death sprite
+      fpix=47.0f;
+      fmoment=20.0f;
+      fspeed=0.5f;  //1 unit=HORZ pixels, so speed is half a screen per second
+      basespeed=fspeed;
+      fsize=16.0f;
+      //basesize=16.0f;
+      itype=0;
+      iorder=0;
+      fhitpoints=3.0f;
+      Gizface(3);
+      break;
+   case 1:  //rat
+      ipics=18;
+      idewey[0]=0;
+      idewey[1]=4; //16
+      idewey[4]=16;
+      idewey[5]=17;
+      fpix=10.0f;
+      fspeed=0.2f;
+      basespeed=fspeed;
+      //basespeed=0.3f;
+      fsize=4.0f;  //if you do smaller than 1.0f it fails the block test for some reason
+                   //probably something about floats, checkout gizmove() I think to figure it out (1.0 is plenty small, who cares)
+      //basesize=8.0f;
+      itype=1;
+      iorder=0;  //make the rat sit still for now
+      fhitpoints=float(rand()%2+1);
+      break;
+   case 2:   //windmill
+      ipics=3;
+     // imax=2;
+      fspeed=1;
+      basespeed=fspeed;
+      //islow=1;
+      fsize=1;
+      //basesize=1.0f;
+      itype=2;
+      iorder=0;
+      fhitpoints=0;  //don't think it matters
+      break;
+   case 3:   //stain
+      ipics=9;
+     // imax=3;
+      fspeed=1.0f;
+      basespeed=fspeed;
+      //islow=1;
+      fsize=14.0f;
+      //basesize=fsize;
+      itype=3;
+      iorder=0;
+      fhitpoints=0;  //don't think it matters
+      fspin=float(rand()%360);
+      break;
+   case 4:  //bug
+      ipics=4;
+      idewey[0]=0;
+      idewey[1]=1;
+      idewey[4]=0;
+      idewey[5]=0;
+
+      fpix=10.0f;
+      fspeed=0.2f;
+      basespeed=fspeed;
+      fsize=1.0f;
+      itype=4;
+      iorder=0;  //make the rat sit still for now
+      fhitpoints=1.0f;
+      break;
+   case 5:  //lightning bug
+      ipics=4;
+      idewey[0]=0;
+      idewey[1]=1;
+      idewey[4]=0;
+      idewey[5]=0;
+
+      fpix=10.0f;
+      fspeed=1.0f;
+      basespeed=fspeed;
+      fsize=1.0f;
+      itype=5;
+      iorder=0;  //make the rat sit still for now
+      fhitpoints=1.0f;
+      break;
+   case 6:  //dragon
+      ipics=13;
+      idewey[0]=0;
+      idewey[1]=3;
+      idewey[4]=12;
+      idewey[5]=12;
+
+      fpix=10.0f;
+      fspeed=0.4f;
+      basespeed=fspeed;
+      //basespeed=0.3f;
+      fsize=32.0f;  //if you do smaller than 1.0f it fails the block test for some reason
+                   //probably something about floats, checkout gizmove() I think to figure it out (1.0 is plenty small, who cares)
+      //basesize=8.0f;
+      itype=6;
+      iorder=0;  //make the rat sit still for now
+      fhitpoints=10.0f;
+      break;
+   default:
+      breturn=false;
+      break;
+   }
+   return breturn;
+}
+
+Iceblock Gizmo::MoveAI(Iceblock icearray[], int ilen)
+{
+   Iceblock icenum;
+   int ix;
+
+   switch(itype)
+   {
+   default:
+      icenum=0;
+      for(ix=0;ix<ilen;ix++)
+      {
+         if(icearray[ix]!=0)
+         {
+            icenum=icearray[ix];
+            ix=ilen;
+         }
+      }
+      break;
+   }
+
+   return icenum;
+}
+
+//AI
+//igizstate
+//0=faceup
+//1=faceleft
+//2=facedown
+//3=faceleft
+//4=attack up
+//5=attack right
+//6=attack down
+//7=attack left
+//8=moveup
+//9=moveright
+//10=movedown
+//11=moveleft
+//12=slammed up
+//13=slammed right
+//14=slammed down
+//15=slammed left
+//16=DEAD
+//every time you call this you have to handle the Gizmo* that is returned or you may leak memory
+//more than likely you should just stick it into a GizBox
+Gizmo* Gizmo::gizupdate(Gizmo *enemy, Icematrix &mapgrid, ImageVault &picbox, AudioBox &boombox, Uint32 history, BombBox &attacknodes)
+{
+  Gizmo *newgiz;
+  Gizmo *othernewgiz;
+  Bomb tempbomb;
+
+  newgiz=NULL;
+
+  switch(itype)
+  {
+  case 0:  //player controlled
+    Gizcalm(mapgrid, history, attacknodes);
+    break;
+  case 1:  //rat
+  case 4:  //bugs
+  case 5:  //lightning bugs
+  case 6:  //dragon
+    switch(igizstate)
+    {
+    case 0:   //face up
+    case 1:
+    case 2:
+    case 3:
+    case 8:   //move up
+    case 9:
+    case 10:
+    case 11:
+      if(iturn<0)
+      {
+//shoud change iturn to a float, use history, make AI same on all speed machines
+        switch(itype)
+        {
+        case 1:  //rat
+        case 6:  //dragon
+          iturn=rand()%500;  //0-x milliseconds until new orders (for bee-hive effect make very small)
+          iorder=rand()%20;
+          if(iorder>7)
+          {
+          if(rand()%3==0)
+            iorder=8;  //chill
+          else
+            iorder=9;  //chase
+          }
+          break;
+        case 4:  //bugs
+          iturn=rand()%10;
+          iorder=rand()%9;
+          if(iorder>7)
+            iorder=9;
+          break;
+        case 5:  //lightning bugs
+          iturn=rand()%50;
+          iorder=rand()%50;
+            if(iorder>7)
+              iorder=8;
+          break;
+        }
+      }
+
+      iturn-=history;
+      switch(iorder)
+      {
+      case 8:  //chill
+        break;
+      case 9:  //chase enemy
+        if(fvert>enemy->fvert&&fhor<enemy->fhor)
+        {
+          //Gizmove(4,history,mapgrid);           //up/right
+          //when guys chase you diagonally fupdate will increase by a factor of 1.4 instead of 1
+          //when they move diagonally on their own fupdate will work correctly
+          //not a huge deal, just makes them run in place faster
+          Gizmove(9,history,mapgrid);
+          if(fhor>enemy->fhor)
+            fhor=enemy->fhor;
+          Gizmove(8,history,mapgrid);
+          if(fvert<enemy->fvert)
+            fvert=enemy->fvert;
+        }
+        else if(fvert<enemy->fvert&&fhor<enemy->fhor)
+        {
+          //Gizmove(5,history,mapgrid);           //down/right
+          Gizmove(9,history,mapgrid);
+          if(fhor>enemy->fhor)
+            fhor=enemy->fhor;
+          Gizmove(10,history,mapgrid);
+          if(fvert>enemy->fvert)
+            fvert=enemy->fvert;
+        }
+        else if(fvert<enemy->fvert&&fhor>enemy->fhor)
+        {
+          //down/left
+          Gizmove(11,history,mapgrid);
+          if(fhor<enemy->fhor)
+            fhor=enemy->fhor;
+          Gizmove(10,history,mapgrid);
+          if(fvert>enemy->fvert)
+            fvert=enemy->fvert;
+        }
+        else if(fvert>enemy->fvert&&fhor>enemy->fhor)
+        {
+          //Gizmove(7,history,mapgrid);           //up/left
+          Gizmove(11,history,mapgrid);
+          if(fhor<enemy->fhor)
+            fhor=enemy->fhor;
+          Gizmove(8,history,mapgrid);
+          if(fvert<enemy->fvert)
+            fvert=enemy->fvert;
+        }
+        else if(fvert>enemy->fvert)
+          Gizmove(0,history,mapgrid);           //up
+        else if(fvert<enemy->fvert)
+          Gizmove(2,history,mapgrid);           //down
+        else if(fhor>enemy->fhor)
+          Gizmove(3,history,mapgrid);           //left
+        else if(fhor<enemy->fhor)
+          Gizmove(1,history,mapgrid);           //right
+        break;
+      default:
+        Gizmove(iorder,history,mapgrid);  //takes other cases such as up, left, up-right
+        break;
+      }
+
+  //can I move these outside of gizupdate?
+      attacknodes.Reset();
+      while(attacknodes.End()==false)
+      {
+        tempbomb=attacknodes.GetBomb();
+        if(Hitcheck(tempbomb))
+        {
+          newgiz=Hurt(1.0f,picbox,boombox,attacknodes.GetForce(),attacknodes.GetDirection());
+          //attacknodes.Finish();
+        }
+        attacknodes.Next();
+      }
+      if(Hitcheck(enemy))
+      {
+        othernewgiz=enemy->Hurt(0.5f,picbox, boombox, 1000, rand()%8);  //replace 0.5 with member damage and member force
+        if(newgiz==NULL&&othernewgiz!=NULL)
+          newgiz=othernewgiz;
+        else if(othernewgiz!=NULL&&newgiz!=NULL)
+          delete othernewgiz;
+      }
+      break;
+    case 12:  //slammed up
+    case 13:
+    case 14:
+    case 15:
+    case 16:  //slammed up-right
+    case 17:
+    case 18:
+    case 19:
+      break;
+    }
+    Gizcalm(mapgrid,history,attacknodes);
+    break;
+  case 2:
+    fspin+=0.1f*float(history);
+    break;
+  case 3:
+    fupdate+=history;
+    if(iauto<8&&fupdate>1000.0f)
+    {
+      fupdate=0.0f;
+      iauto+=1;
+    }
+    break;
+  }
+  return newgiz;
+}

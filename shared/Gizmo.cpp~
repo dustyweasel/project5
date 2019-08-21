@@ -1,0 +1,951 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower                                   *
+ *   icecubeflower@yahoo.com                                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include "Gizmo.h"
+
+Gizmo::Gizmo()
+{
+   iauto=0;
+   fupdate=0.0f;
+   itype=0;
+   iturn=0;
+   iorder=0;
+   fspin=0;
+   fhitpoints=0;
+   igizstate=1;
+   itimer=0;
+   bhurt=false;
+}
+
+Gizmo::~Gizmo()
+{
+   //doesn't have any dynamic memory anymore
+}
+
+bool Gizmo::Gizspawn(int ival, std::string strval)
+{
+  bool breturn=false;
+
+  if(Switcher(ival))
+  {
+    if(giztex.CreateBox(ipics))
+    {
+      name=strval;
+      breturn=true;
+    }
+  }
+
+  return breturn;
+}
+
+//returns 0 if fail or old OpenGL name in case you want to delete it
+GLuint Gizmo::PicSwap(std::string strval, ImageVault &picbox, int texelement)
+{
+  return giztex.InsertTex(strval,texelement,picbox);
+}
+
+bool Gizmo::Gizgen(std::string strgiz, float spawnhor, float spawnvert, ImageVault &imagebox)
+{
+  std::ifstream gizfile;
+  int ij;
+  std::string rgcswap;
+  bool breturn=false;
+
+  Apocalypse();
+  strgiz=Pathfinder::Gizmo_Path+strgiz;
+
+  if(Normal_File(strgiz))
+  {
+    gizfile.open(strgiz.c_str(),std::ios::in|std::ios::binary);
+    breturn=!gizfile.fail();
+  }
+  if(breturn)
+  {
+    name.insert(0,strgiz,Pathfinder::Gizmo_Path.length(),strgiz.length()-Pathfinder::Gizmo_Path.length());
+    fhor=spawnhor;
+    fvert=spawnvert;
+    gizfile>>itype;
+    gizfile.ignore();
+    breturn=Switcher(itype);
+  }
+  if(breturn)
+  {
+    if(giztex.CreateBox(ipics))
+    {
+      for(ij=0;ij<ipics;ij++)
+      {
+        getline(gizfile,rgcswap);
+        //don't make sure images load, let it load blanks
+        giztex.InsertTex(rgcswap,ij,imagebox);
+      }
+    }
+    for(ij=0;ij<SOUNDTOTAL;ij++)
+    {
+      getline(gizfile,rgcswap);
+      soundfiles[ij]=rgcswap;
+    }
+  }
+  gizfile.close();
+
+  //returns true as long as Switcher exectuted
+  //if anything else failed we'll just have a white square running around
+  //(if mem allocate fails ipics will be >0 but itexsize will be zero and requests for pics will return false)
+  //(if pic loading fails then 0 will be the GLuint (tex name) in the TexBox)
+  return breturn;
+}
+
+void Gizmo::Gizwrite(ImageVault &picbox)
+{
+  std::ofstream outfile;
+  int ix;
+
+  outfile.open((Pathfinder::Gizmo_Path+name).c_str(),std::ios::out|std::ios::binary);
+  outfile<<itype<<"\n";
+
+  for(ix=0;ix<ipics;ix++)
+    outfile<<picbox.GetName(GetPic(ix))<<"\n";
+
+  for(ix=0;ix<SOUNDTOTAL;ix++)
+    outfile<<soundfiles[ix]<<"\n";
+
+  outfile.close();
+}
+
+//one block == 16 pixels so if wait for fupdate to reach 64 then update pic every 4 blocks
+//0=up 1=right 2=down 3=left
+//4=up/right   5=down/right
+//6=down/left  7=up/left
+//8-11 like 0-3 but *0.707f, see AI function
+Iceblock Gizmo::Gizmove(int idirection, Uint32 history, Icematrix &mapgrid)
+{
+   float fmove=1.0f;
+   Iceblock iceval;
+
+   iceval=0;
+
+   switch(igizstate)
+   {
+   case 0:  //face up
+   case 1:
+   case 2:
+   case 3:
+   case 8:  //move up
+   case 9:
+   case 10:
+   case 11:
+      //might be able to obsoleteify this switch as well
+      switch(idirection)
+      {
+      case 8:
+         //if AI chases hero diagonally, probably won't land at EXACTLY fhor=enemy->fhor so if passes it then pull it back to
+         //fhor=enemy->fhor BUT this can make a guy walk through walls so don't call diagonal functions, use orthogonal
+         //but still have to keep from going extra fast so set fmove to 1.0f above and do fmove*= stuff instead of fmove= stuff
+         fmove*=0.707f;
+      case 0:  //up
+         //fmove = pixels to move (seconds since last update times screen lengths per sec)
+         fmove*=fspeed*(float(history)/1000.0f)*HORZ;
+         //fupdate is possibly Giz type specific, probably means pixels moved since last sprite change
+         fupdate+=fmove;
+         //moving up
+         igizstate=8;
+         iceval=Gizsubmove(0, fmove, mapgrid);
+         break;
+      case 9:
+         fmove*=0.707f;
+      case 1:  //right
+         fmove*=fspeed*(float(history)/1000.0f)*float(HORZ);
+         fupdate+=fmove;
+         igizstate=9;
+         iceval=Gizsubmove(1, fmove, mapgrid);
+         break;
+      case 10:
+         fmove*=0.707f;
+      case 2:  //down
+         fmove*=fspeed*(float(history)/1000.0f)*HORZ;
+         fupdate+=fmove;
+         igizstate=10;
+         iceval=Gizsubmove(2, fmove, mapgrid);
+         break;
+      case 11:
+         fmove*=0.707f;
+      case 3:  //left
+         fmove*=fspeed*(float(history)/1000.0f)*HORZ;
+         fupdate+=fmove;
+         igizstate=11;
+         iceval=Gizsubmove(3, fmove, mapgrid);
+         break;
+      case 4:  //up/right
+         //don't want non-orthogonal movement to be faster so pythagoran theormize those 45 degree movements
+         //(multiply hypotenuse by 0.707)
+         fmove=0.707f*fspeed*(float(history)/1000.0f)*float(HORZ);
+         fupdate+=fmove;
+         igizstate=8;
+         Gizsubmove(1, fmove, mapgrid);
+         iceval=Gizsubmove(0, fmove, mapgrid);
+         break;
+      case 5:  //down/right
+         fmove=0.707f*fspeed*(float(history)/1000.0f)*float(HORZ);
+         fupdate+=fmove;
+         igizstate=10;
+         Gizsubmove(1, fmove, mapgrid);
+         iceval=Gizsubmove(2, fmove, mapgrid);
+         break;
+      case 6:  //down/left
+         fmove=0.707f*fspeed*(float(history)/1000.0f)*float(HORZ);
+         fupdate+=fmove;
+         igizstate=10;
+         Gizsubmove(3, fmove, mapgrid);
+         iceval=Gizsubmove(2, fmove, mapgrid);
+         break;
+      case 7:  //up/left
+         fmove=0.707f*fspeed*(float(history)/1000.0f)*float(HORZ);
+         fupdate+=fmove;
+         igizstate=8;
+         Gizsubmove(3, fmove, mapgrid);
+         iceval=Gizsubmove(0, fmove, mapgrid);
+         break;
+      }//switch(idirection)
+
+      if(fupdate>fpix)
+      {
+         switch(idirection)
+         {
+         case 0:  //up
+         case 1:  //right
+         case 2:  //down
+         case 3:  //left
+         case 4:  //up-right
+         case 5:  //down-right
+         case 6:  //down-left
+         case 7:  //up-left
+         case 9:  //right (hypotenuse speed, can't use up-right, see above)
+         case 11: //left
+            fupdate=0.0f;
+
+            //if pic is last pic in direction set or not in set at all, set it to 1st pic in set
+            if(iauto<idewey[0]+idewey[1]*(idirection%4)||iauto>=idewey[0]+idewey[1]*((idirection%4)+1)-1)
+               iauto=idewey[0]+idewey[1]*(idirection%4);
+            else
+               iauto+=1;  //else next pic
+            break;
+         case 8:    //up
+         case 10:   //down
+            //if AI moving diagonnally already updated with right/left movements, do nothing here
+            break;
+         }
+      }
+      break;
+   }//switch(igizstate)
+
+   return iceval;
+}
+
+Iceblock Gizmo::Gizrun(int idirection, Uint32 history, Icematrix &mapgrid)
+{
+   Iceblock icereturn;
+
+   fspeed*=2.0f;
+   icereturn=Gizmove(idirection,history,mapgrid);
+   fspeed=basespeed;
+
+   return icereturn;
+}
+
+//used for moving, 4 directions 0-3
+//(nobody really moves diagonally, it's easier to fake it)
+Iceblock Gizmo::Gizsubmove(int idirection, float fmove, Icematrix &mapgrid)
+{
+   Iceblock iceval;
+   Iceblock *iceline;
+   int ix;
+   int radar;
+
+   iceline=NULL;
+
+//probably a good idea to sketch this on paper and go over it one more time, make sure it's correct
+   switch(idirection)
+   {
+   case 0:  //up
+      //blocks are 16 pixels wide, check a block, move 16, check a block... make sure we aren't to the top of the screen
+      while(fmove>0.0f&&fvert-fsize>=16.0f)
+      {
+         //radar= the number of blocks we have to check
+         //radar=total blocks you can squeeze into it + 1
+         radar=int(fsize*2.0f)/16+1;
+         //if(if distance left coordinate is past last multiple of 16 is greater than or equal to whatever amount it takes to add to diameter
+         //to make it equal next multiple of 16 then add 1 more to radar
+         if(fhor-fsize-float(int(fhor-fsize)/16*16)>=float((int(fsize*2.0f)/16+1)*16)-fsize*2.0f)
+           radar+=1;
+
+      //need try/catch for all 4 of these
+         iceline=new Iceblock[radar];
+         //fill it up with the blocks above, if we're testing bad blocks (past left or right side of map) then use the left or right
+         //most block repeatedly
+         for(ix=0;ix<radar;ix++)
+         {
+            if(ix+int(fhor-fsize)/16<0)
+               iceline[ix]=mapgrid.Grab_Element(int(fvert-fsize)/16-1,0);
+            else if(ix+int(fhor-fsize)/16<mapgrid.Get_Columns()*64)
+               iceline[ix]=mapgrid.Grab_Element(int(fvert-fsize)/16-1,ix+int(fhor-fsize)/16);
+            else
+               iceline[ix]=mapgrid.Grab_Element(int(fvert-fsize)/16-1,mapgrid.Get_Columns()*64-1);
+         }
+
+         //send it off to a function which returns type specific behavior
+         iceval=MoveAI(iceline, radar);
+         delete[] iceline;
+
+         //if(16 or more pixels left to move and way is clear)
+         if(fmove>=16.0f&&iceval==0)
+         {
+            fvert-=16.0f;
+            fmove-=16.0f;
+         }
+         //else if(less than 16 left AND (space for fmove OR next block empty))
+         else if(fmove<16.0f&&(16.0f-(float((int(fvert-fsize)/16+1)*16.0f)-(fvert-fsize))>=fmove||iceval==0))
+         {
+            fvert-=fmove;
+            fmove=0.0f;
+         }
+         //else (16 or more pixels and blocked OR less than 16 but fmove greater than space)
+         else
+         {
+            fvert=float((int(fvert-fsize)/16)*16)+fsize+0.1f;
+            fmove=0.0f;
+         }
+      }
+      fvert-=fmove;
+      if(fvert<0.0f)
+         fvert=0.0f;
+
+      break;
+   case 1:  //submove right
+      while(fmove>0.0f&&fhor+fsize<float(1024*mapgrid.Get_Columns()-16))
+      {
+         radar=int(fsize*2.0f)/16+1;
+         if(fvert-fsize-float(int(fvert-fsize)/16*16)>=float((int(fsize*2.0f)/16+1)*16)-fsize*2.0f)
+           radar+=1;
+
+         iceline=new Iceblock[radar];
+
+         for(ix=0;ix<radar;ix++)
+         {
+            if(ix+int(fvert-fsize)/16<0)
+               iceline[ix]=mapgrid.Grab_Element(0,int(fhor+fsize)/16+1);
+            else if(ix+int(fvert-fsize)/16<mapgrid.Get_Rows()*48)
+               iceline[ix]=mapgrid.Grab_Element(ix+int(fvert-fsize)/16,int(fhor+fsize)/16+1);
+            else
+               iceline[ix]=mapgrid.Grab_Element(mapgrid.Get_Rows()*48-1,int(fhor+fsize)/16+1);
+         }
+
+         //send it off to a function which returns type specific behavior
+         iceval=MoveAI(iceline, radar);
+         delete[] iceline;
+
+         //if(16 or more pixels left to move and way is clear)
+         if(fmove>=16.0f&&iceval==0)
+         {
+            fhor+=16.0f;
+            fmove-=16.0f;
+         }
+         //else if(less than 16 left AND (space for fmove OR next block empty) )
+         else if(fmove<16.0f&&(16-(float(int(fhor+fsize)%16)+(fhor-int(fhor)))>fmove+0.01f||iceval==0))
+         {
+            fhor+=fmove;
+            fmove=0.0f;
+         }
+         //else (16 or more pixels and blocked OR less than 16 but fmove greater than space)
+         else
+         {
+            fhor=float(int(fhor+fsize)/16*16+16)-fsize-0.01f;
+            fmove=0.0f;
+         }
+      }
+      fhor+=fmove;
+      if(fhor>float(1024*mapgrid.Get_Columns()))
+         fhor=float(1024*mapgrid.Get_Columns());
+      break;
+   case 2:  //down submove
+      while(fmove>0.0f&&fvert+fsize<float(768*mapgrid.Get_Rows()-16))
+      {
+         radar=int(fsize*2.0f)/16+1;
+         if(fhor-fsize-float(int(fhor-fsize)/16*16)>=float((int(fsize*2.0f)/16+1)*16)-fsize*2.0f)
+           radar+=1;
+
+         iceline=new Iceblock[radar];
+         for(ix=0;ix<radar;ix++)
+         {
+            if(ix+int(fhor-fsize)/16<0)
+               iceline[ix]=mapgrid.Grab_Element(int(fvert+fsize)/16+1,0);
+            else if(ix+int(fhor-fsize)/16<mapgrid.Get_Columns()*64)
+               iceline[ix]=mapgrid.Grab_Element(int(fvert+fsize)/16+1,ix+int(fhor-fsize)/16);
+            else
+               iceline[ix]=mapgrid.Grab_Element(int(fvert+fsize)/16+1,mapgrid.Get_Columns()*64-1);
+         }
+
+         //send it off to a function which returns type specific behavior
+         iceval=MoveAI(iceline, radar);
+         delete[] iceline;
+
+         //if(16 or more pixels left to move and way is clear)
+         if(fmove>=16.0f&&iceval==0)
+         {
+            fvert+=16.0f;
+            fmove-=16.0f;
+         }
+         //else if(less than 16 left AND (space for fmove OR next block empty) )
+         else if(fmove<16.0f&&(16-(float(int(fvert+fsize)%16)+(fvert-int(fvert)))>fmove+0.01f||iceval==0))
+         {
+            fvert+=fmove;
+            fmove=0.0f;
+         }
+         //else (16 or more pixels and blocked OR less than 16 but fmove greater than space)
+         else
+         {
+            fvert=float(int(fvert+fsize)/16*16+16)-fsize-0.01f;
+            fmove=0.0f;
+         }
+      }
+      fvert+=fmove;
+      //if(fvert>float(768*mapgrid.Get_Rows()))
+      if(fvert>float(mapgrid.Get_Rows()*16))
+         fvert=float(mapgrid.Get_Rows()*16);
+      break;
+   case 3:  //submove left
+      while(fmove>0.0f&&fhor-fsize>=16.0f)
+      {
+         radar=int(fsize*2.0f)/16+1;
+         if(fvert-fsize-float(int(fvert-fsize)/16*16)>=float((int(fsize*2.0f)/16+1)*16)-fsize*2.0f)
+           radar+=1;
+
+         iceline=new Iceblock[radar];
+
+         for(ix=0;ix<radar;ix++)
+         {
+            if(ix+int(fvert-fsize)/16<0)
+               iceline[ix]=mapgrid.Grab_Element(0,int(fhor-fsize)/16-1);
+            else if(ix+int(fvert-fsize)/16<mapgrid.Get_Rows()*48)
+               iceline[ix]=mapgrid.Grab_Element(ix+int(fvert-fsize)/16,int(fhor-fsize)/16-1);
+            else
+               iceline[ix]=mapgrid.Grab_Element(mapgrid.Get_Rows()*48-1,int(fhor-fsize)/16-1);
+         }
+
+         //send it off to a function which returns type specific behavior
+         iceval=MoveAI(iceline, radar);
+         delete[] iceline;
+
+         //if(16 or more pixels left to move and way is clear)
+         if(fmove>=16.0f&&iceval==0)
+         {
+            fhor-=16.0f;
+            fmove-=16.0f;
+         }
+         //else if(less than 16 left AND (space for fmove OR next block empty) )
+         else if(fmove<16.0f&&(float(int(fhor-fsize)%16)+(fhor-int(fhor))>=fmove||iceval==0))
+         {
+            fhor-=fmove;
+            fmove=0.0f;
+         }
+         //else (16 or more pixels and blocked OR less than 16 but fmove greater than space)
+         else
+         {
+            fhor=float(int(fhor-fsize)/16*16)+fsize;
+            fmove=0.0f;
+         }
+      }
+      fhor-=fmove;
+      if(fhor<0.0f)
+         fhor=0.0f;
+      break;
+   }
+
+   return iceval;
+}
+
+Iceblock Gizmo::Gizslam(Uint32 history, Icematrix &mapgrid)
+{
+   float fmove=1.0f;
+   Iceblock iceval;
+
+   iceval=0;
+
+   //possible to condense this
+   switch(igizstate)
+   {
+   case 12:  //up
+      //fmove = pixels to move (seconds since last update times screen lengths per sec)
+      fmove=2.0f*(float(history)/1000.0f)*HORZ;
+      //fupdate is possibly Giz type specific, probably means pixels moved since last sprite change
+      fupdate+=fmove;
+      iceval=Gizsubmove(0, fmove, mapgrid);
+      break;
+   case 13:  //right
+      fmove=2.0f*(float(history)/1000.0f)*float(HORZ);
+      fupdate+=fmove;
+      iceval=Gizsubmove(1, fmove, mapgrid);
+      break;
+   case 14:  //down
+      fmove=2.0f*(float(history)/1000.0f)*HORZ;
+      fupdate+=fmove;
+      iceval=Gizsubmove(2, fmove, mapgrid);
+      break;
+   case 15:  //left
+      fmove=2.0f*(float(history)/1000.0f)*HORZ;
+      fupdate+=fmove;
+      iceval=Gizsubmove(3, fmove, mapgrid);
+      break;
+   case 16:  //up/right
+      //don't want non-orthogonal movement to be faster so pythagoran theormize those 45 degree movements
+      //(multiply hypotenuse by 0.707)
+      fmove=1.414f*(float(history)/1000.0f)*float(HORZ);
+      fupdate+=fmove;
+      Gizsubmove(1, fmove, mapgrid);
+      iceval=Gizsubmove(0, fmove, mapgrid);
+      break;
+   case 17:  //down/right
+      fmove=1.414f*(float(history)/1000.0f)*float(HORZ);
+      fupdate+=fmove;
+      Gizsubmove(1, fmove, mapgrid);
+      iceval=Gizsubmove(2, fmove, mapgrid);
+      break;
+   case 18:  //down/left
+      fmove=1.414f*(float(history)/1000.0f)*float(HORZ);
+      fupdate+=fmove;
+      Gizsubmove(3, fmove, mapgrid);
+      iceval=Gizsubmove(2, fmove, mapgrid);
+      break;
+   case 19:  //up/left
+      fmove=1.414f*(float(history)/1000.0f)*float(HORZ);
+      fupdate+=fmove;
+      Gizsubmove(3, fmove, mapgrid);
+      iceval=Gizsubmove(0, fmove, mapgrid);
+      break;
+   }
+
+   return iceval;
+}
+
+void Gizmo::SlamSet(int idirection, float force)
+{
+   if(idirection>=0&&idirection<=7)
+   {
+      igizstate=idirection+12;
+      slamdistance=force;
+      fupdate=0.0f;
+   }
+   itimer=500;  //leave Gizmo invincible for x milliseconds
+   bhurt=true;  //move these two back to Hurt()
+}
+
+//takes care of slammed gizmos and hurt/invincible gizmos
+void Gizmo::Gizcalm(Icematrix &mapgrid, Uint32 history,BombBox& attacknodes)
+{
+   Iceblock iceval;
+
+   switch(igizstate)
+   {
+   case 0:  //face up
+   case 1:
+   case 2:
+   case 3:
+      break;
+   case 4:  //attack up
+   case 5:
+   case 6:
+   case 7:
+      fupdate+=float(history);
+      if(fupdate>fmoment)
+      {
+         iauto+=1;
+         if(iauto>=idewey[2]+idewey[3]*(igizstate-3))
+         {
+            Gizface(igizstate-4);
+            attacknodes.ZapNode(bombkeeper);
+         }
+         fupdate=0.0f;
+      }
+      break;
+   case 8:  //move up
+   case 9:
+   case 10:
+   case 11:
+      break;
+   case 12:  //slammed up
+   case 13:
+   case 14:
+   case 15:
+   case 16:  //slammed up-right
+   case 17:
+   case 18:
+   case 19:
+      if(fupdate<slamdistance)
+      {
+         Gizslam(history, mapgrid);
+      }
+      else
+      {
+         //igizstate=rand()%4;  //facedown
+         //Setpic();
+         Gizface(rand()%4);
+      }
+      break;
+   case 1000000:  //DEAD
+      fupdate+=float(history);
+      if(fupdate>50.0f)
+      {
+         fupdate=0.0f;
+         if(iauto<idewey[4])
+            iauto=idewey[4];
+         else if(iauto<idewey[5])
+            iauto+=1;
+      }
+      break;
+   }
+
+   if(itimer>0)
+   {
+      itimer-=history;
+      if(itimer<=0)
+      {
+         bhurt=false;
+      }
+   }
+}
+
+void Gizmo::Die(AudioBox &boombox)
+{
+   fupdate=0.0f;
+   igizstate=1000000;
+   //have these two loaded in Gizmo variables someday (or GizStatBox)
+   //boombox.Kill_loop("Data/Sounds/LowHealth.wav",5000);
+   boombox.Playsound(soundfiles[1]);
+}
+
+//if(attacker->Hitcheck(kaboom->fhor,kaboom->fvert,kaboom->fsize,gizreturn->giz->fhor,gizreturn->giz->fvert,gizreturn->giz->fsize))
+bool Gizmo::Hitcheck(Bomb &kaboom)
+{
+   //if the distance between the two centerpoints is less than or equal to thier combined radii
+   if(sqrt((kaboom.fhor-fhor)*(kaboom.fhor-fhor)+(kaboom.fvert-fvert)*(kaboom.fvert-fvert))<=kaboom.fsize+fsize)
+      return true;
+   else
+      return false;
+}
+
+bool Gizmo::Hitcheck(Gizmo *killer)
+{
+   if(sqrt((killer->fhor-fhor)*(killer->fhor-fhor)+(killer->fvert-fvert)*(killer->fvert-fvert))<=killer->fsize+fsize)
+      return true;
+   else
+      return false;
+}
+
+//this returns a pointer to a newly allocated gizmo
+//put it into a Gizbox or it will be leaked memory!
+Gizmo* Gizmo::Hurt(float fpain, ImageVault &imagebox, AudioBox &boombox, float force, int idirection)
+{
+  Gizmo *gizabsorb;
+
+  gizabsorb=NULL;
+  if(!bhurt)
+  {
+    switch(igizstate)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 8:
+    case 9:
+    case 10:
+    case 11:
+      fhitpoints-=fpain;
+      if(fhitpoints>0.0f)
+      {
+          //if(fhitpoints<3.0f)
+          //  boombox.Loopsound("Data/Sounds/LowHealth.wav",0);
+        boombox.Playsound(soundfiles[0]);
+        gizabsorb=new Gizmo;  //need try/catch here (worry about it after condensing to one case for all Giz types)
+        if(gizabsorb->Gizgen("blood.giz",fhor,fvert,imagebox)==false)  //get this from giz file eventually
+        {
+          delete gizabsorb;
+          gizabsorb=NULL;
+        }
+        else
+        {
+          gizabsorb->fsize=fsize/2.0f;
+        }
+        SlamSet(idirection,force);
+      }
+      else
+      {
+        Die(boombox);
+      }
+      break;
+    }
+  }
+  return gizabsorb;
+}
+
+void Gizmo::Apocalypse()
+{
+   name="";
+   fhor=0;
+   fvert=0;
+   fspeed=0;
+   fsize=0.0f;
+   iauto=0;
+   fupdate=0.0f;
+   itype=0;
+//   spawntype=0;
+   iturn=0;
+   iorder=0;
+   fspin=0.0f;
+   fhitpoints=0.0f;
+   igizstate=0;
+   itimer=0;
+   ipics=0;
+//   imax=0;
+   giztex.KillTexBox();
+}
+
+void Gizmo::Gizface(int idirection)
+{
+   if(idirection>=0&&idirection<=3)
+   {
+      switch(igizstate)
+      {
+      case 0:  //face up
+      case 1:
+      case 2:
+      case 3:
+      case 8:  //move up
+      case 9:
+      case 10:
+      case 11:
+      case 12: //slam up
+      case 13:
+      case 14:
+      case 15:
+      case 16: //slam up-right
+      case 17:
+      case 18:
+      case 19:
+         igizstate=idirection;
+         iauto=idewey[0]+idewey[1]*idirection;
+         break;
+      case 4:  //attack up
+      case 5:
+      case 6:
+      case 7:
+         if(iauto>=idewey[2]+idewey[3]*(igizstate-3))
+         {
+            igizstate=idirection;
+            iauto=idewey[0]+idewey[1]*idirection;
+         }
+         break;
+      }
+   }
+}
+
+//whoever calls this better free the Bomb*
+//Bomb* Gizmo::Attack(AudioBox *boombox, BombBox &attacknodes)
+void Gizmo::Attack(AudioBox *boombox, BombBox &attacknodes)
+{
+   //Bomb *kaboom;
+   Bomb kaboom;
+
+   //kaboom=new Bomb;
+
+   switch(igizstate)
+   {
+   case 0:  //attack up
+   case 8:  //move up
+      kaboom.fhor=fhor;
+      kaboom.fvert=fvert-fsize;
+      SubAttack(kaboom, boombox, attacknodes);
+      break;
+   case 1:
+   case 9:
+      kaboom.fhor=fhor+fsize;
+      kaboom.fvert=fvert;
+      SubAttack(kaboom, boombox, attacknodes);
+      break;
+   case 2:
+   case 10:
+      kaboom.fhor=fhor;
+      kaboom.fvert=fvert+fsize;
+      SubAttack(kaboom, boombox,attacknodes);
+      break;
+   case 3:
+   case 11:
+      kaboom.fhor=fhor-fsize;
+      kaboom.fvert=fvert;
+      SubAttack(kaboom, boombox,attacknodes);
+      break;
+   default:
+      //kaboom=NULL;
+      //delete kaboom;
+      break;
+   }
+   //return kaboom;
+}
+
+//should only be called by Attack()
+void Gizmo::SubAttack(Bomb &kaboom, AudioBox *boombox, BombBox &attacknodes)
+{
+   iauto=idewey[2]+(igizstate%8)*idewey[3];
+   kaboom.idirection=(igizstate%4);
+   igizstate=(igizstate%8)+4;
+   fupdate=0.0f;
+   boombox->Playsound(soundfiles[2]);
+   kaboom.fsize=fsize*2.0f;
+   kaboom.iforce=1000;
+
+   attacknodes.InsertTail(kaboom);
+   bombkeeper=attacknodes.GetTail();
+}
+
+GLuint Gizmo::GetPic()
+{
+   //return iauto;
+   return giztex.GetPic(iauto);
+}
+
+GLuint Gizmo::GetPic(int inum)
+{
+   giztex.GetPic(inum);
+}
+
+std::string Gizmo::GetPicName(int inum, ImageVault &picbox)
+{
+  return picbox.GetName(giztex.GetPic(inum));
+}
+
+int Gizmo::GetType()
+{
+   return itype;
+}
+
+void Gizmo::Grow()
+{
+   fsize*=2.0f;
+   if(fsize>256.0f)
+      fsize=256.0f;
+}
+
+void Gizmo::Shrink()
+{
+   fsize/=2.0f;
+   if(fsize<1.0f)
+      fsize=1.0f;
+}
+
+//add another variable someday, like if we don't want to warp to blocks or something
+bool Gizmo::Teleport(float x, float y, int idirection, Icematrix &mapgrid, bool bcenter)
+{
+  if(x>=0.0f&&y>=0.0f&&idirection>=0&&idirection<=3&&x<=mapgrid.Get_Columns()*16&&y<=mapgrid.Get_Rows()*16)
+  {
+    if(bcenter)
+    {
+      fhor=float(int(x)/16*16+8);
+      fvert=float(int(y)/16*16+8);
+    }
+    else
+    {
+      fhor=x;
+      fvert=y;
+    }
+
+    Gizface(idirection);
+    return true;
+  }
+  return false;
+}
+
+float Gizmo::GetHor()
+{
+  return fhor;
+}
+
+float Gizmo::GetVert()
+{
+  return fvert;
+}
+
+bool Gizmo::GetHurt()
+{
+  return bhurt;
+}
+
+float Gizmo::GetSize()
+{
+  return fsize;
+}
+
+float Gizmo::GetSpin()
+{
+  return fspin;
+}
+
+float Gizmo::GetHealth()
+{
+  return fhitpoints;
+}
+
+int Gizmo::GetState()
+{
+  return igizstate;
+}
+
+int Gizmo::GetSpawnType()
+{
+  return spawntype;
+}
+
+void Gizmo::SetSpawnType(int ival)
+{
+   spawntype=ival;
+}
+
+std::string Gizmo::GetName()
+{
+   return name;
+}
+
+int Gizmo::GetMax()
+{
+  return ipics;
+}
+
+void Gizmo::SetSound(int ival, std::string strval)
+{
+  if(ival>=0&&ival<SOUNDTOTAL)
+    soundfiles[ival]=strval;
+}
+
+std::string Gizmo::GetSoundName(int ival)
+{
+  std::string strval;
+
+  if(ival>=0&&ival<SOUNDTOTAL)
+    strval=soundfiles[ival];
+
+  return strval;
+}

@@ -1,0 +1,134 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower                                   *
+ *   icecubeflower@yahoo.com                                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include "MapBox.h"
+
+/*you ALWAYS should empty monsterstore after calling this
+static void drawstore();  <-usually with this*/
+void MapBox::drawgiz(int ilayer, float fx, float fy, bool highlight)
+{
+  GizBox *drawbox;
+
+  switch(ilayer)
+  {
+  case 0:
+    drawbox=&monsterbox;
+    break;
+  case 1:
+    drawbox=&splatterbox;
+    break;
+  default:
+    drawbox=&monsterbox;
+    break;
+  }
+
+  drawbox->Reset();
+  while(drawbox->End()==false)
+  {                                 //one ix call gets *gizreturn into position so use faster calls after that
+     glPushMatrix();
+     if(drawbox->GetHurt())
+        glColor3f(float(rand())/float(RAND_MAX),float(rand())/float(RAND_MAX),float(rand())/float(RAND_MAX));
+     else
+        glColor3f(1.0f,1.0f,1.0f);
+
+     if(subWidth<mWidth)
+       glTranslatef(float(mWidth-subWidth)/2.0f,0.0f,0.0f);
+     if(subHeight<mHeight)
+       glTranslatef(0.0f,float(mHeight-subHeight)/2.0f,0.0f);
+     glTranslatef(drawbox->GetHor()-fx,drawbox->GetVert()-fy,0.0);
+
+     switch(drawbox->GetType())
+     {
+     case 0:  //wait, this is a player gizmo, this case useless, well maybe for NPC later
+     case 1:  //rat
+     case 4:  //bug
+     case 6:  //dragon
+        glBindTexture(GL_TEXTURE_2D, drawbox->GetPic());
+        glBegin(GL_POLYGON);
+           glTexCoord2f(0,0);		glVertex3f(-drawbox->GetSize()*3.0f,-drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(1,0);		glVertex3f(drawbox->GetSize()*3.0f,-drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(1,1);		glVertex3f(drawbox->GetSize()*3.0f,drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(0,1);		glVertex3f(-drawbox->GetSize()*3.0f,drawbox->GetSize()*3.0f,0.0);
+        glEnd();
+        break;
+     case 2:  //change back to 2
+        glBindTexture(GL_TEXTURE_2D, drawbox->GetPic(0));  //probably need to add one where I get supply GetPic with an integer, (think windmill)
+        glBegin(GL_POLYGON);
+           glTexCoord2f(0,0);		glVertex3f(-128,-128,0.0);
+           glTexCoord2f(1,0);		glVertex3f(128,-128,0.0);
+           glTexCoord2f(1,1);		glVertex3f(128,128,0.0);
+           glTexCoord2f(0,1);		glVertex3f(-128,128,0.0);
+        glEnd();
+        monsterstore.PushPic(128,2,int(drawbox->GetHor()-fx),int(drawbox->GetVert()-fy),
+           drawbox->GetSpin(),drawbox->GetPic(2));
+        monsterstore.PushPic(128,2,int(drawbox->GetHor()-fx),int(drawbox->GetVert()-fy),
+           drawbox->GetSpin(),drawbox->GetPic(1));
+        break;
+     case 3:  //mill
+        glPushMatrix();
+        glRotatef(drawbox->GetSpin(),0.0,0.0,1.0);
+        glBindTexture(GL_TEXTURE_2D, drawbox->GetPic());
+        glBegin(GL_POLYGON);
+           glTexCoord2f(0,0);		glVertex3f(-drawbox->GetSize()*3.0f,-drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(1,0);		glVertex3f(drawbox->GetSize()*3.0f,-drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(1,1);		glVertex3f(drawbox->GetSize()*3.0f,drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(0,1);		glVertex3f(-drawbox->GetSize()*3.0f,drawbox->GetSize()*3.0f,0.0);
+        glEnd();
+        glPopMatrix();
+        break;
+     case 5:  //lightning bug
+        glColor3f(float(rand())/float(RAND_MAX),float(rand())/float(RAND_MAX),float(rand())/float(RAND_MAX));
+        glBindTexture(GL_TEXTURE_2D, drawbox->GetPic());
+        glBegin(GL_POLYGON);
+           glTexCoord2f(0,0);		glVertex3f(-drawbox->GetSize()*3.0f,-drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(1,0);		glVertex3f(drawbox->GetSize()*3.0f,-drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(1,1);		glVertex3f(drawbox->GetSize()*3.0f,drawbox->GetSize()*3.0f,0.0);
+           glTexCoord2f(0,1);		glVertex3f(-drawbox->GetSize()*3.0f,drawbox->GetSize()*3.0f,0.0);
+        glEnd();
+        break;
+     }
+
+     #ifdef PROGRAMMER
+     GLUquadricObj* quadratic;
+     quadratic=gluNewQuadric();
+     if(highlight)
+     {
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE);   //this does awesome ghost effect
+        glColor4f(0.0,1.0,0.0,1.0f);
+        glBegin(GL_POLYGON);
+           glVertex3f(-drawbox->GetSize(),-drawbox->GetSize(),0.0);
+           glVertex3f(drawbox->GetSize(),-drawbox->GetSize(),0.0);
+           glVertex3f(drawbox->GetSize(),drawbox->GetSize(),0.0);
+           glVertex3f(-drawbox->GetSize(),drawbox->GetSize(),0.0);
+        glEnd();
+        glColor4f(0.0,0.0,1.0,1.0f);
+        gluDisk(quadratic,0.0,drawbox->GetSize(),25,1);
+        glEnable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+     }
+     gluDeleteQuadric(quadratic);
+     #endif
+
+     glPopMatrix();
+
+     drawbox->Next();
+  }
+}

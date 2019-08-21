@@ -1,0 +1,224 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower                                   *
+ *   icecube@icebox                                                        *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include "Picloader.h"
+
+VaultNode::VaultNode()
+{
+   imagenext=NULL;
+}
+
+VaultNode::~VaultNode()
+{
+   //When an ImageVault goes out of scope, every image it loaded into OpenGL is erased.
+   glDeleteTextures(1,&imagenum);
+}
+
+ImageVault::ImageVault()
+{
+   imagehead=NULL;
+   imagereturn=NULL;
+}
+
+ImageVault::~ImageVault()
+{
+   imagereturn=imagehead;
+   while(imagereturn!=NULL)
+   {
+      imagehead=imagereturn->imagenext;
+      delete imagereturn;
+      imagereturn=imagehead;
+   }
+}
+
+//This is only for PNG's and JPG's.  If anything else works then it's a coincidence.
+//If you try loading a file that is already in this ImageVault then funnum will just
+//be set to the correct number
+bool ImageVault::ImageLoader(std::string filename, GLuint &funnum)
+{
+  bool breturn=false;
+  SDL_RWops *rwop;  //don't remember wtf this is, use it to check if an image is a jpeg
+  SDL_Surface *image;
+  VaultNode *temp;
+
+  temp=imagehead;
+  imagereturn=imagehead;
+  //scroll to the point in the list where the file already exists or scroll all the way to the end
+  while(imagereturn!=NULL&&imagereturn->imagename!=filename)
+  {
+    temp=imagereturn;
+    imagereturn=imagereturn->imagenext;
+  }
+
+  //if(image is already in list)
+  if(imagereturn!=NULL)
+  {
+    funnum=imagereturn->imagenum;  //set funnum to corresponding image in OpenGL land
+    breturn=true;
+  }
+  else  //image is not in list
+  {
+    if(image=IMG_Load((Pathfinder::Image_Path+filename).c_str()))
+    {
+
+      /*maybe need to be checking glGenTextures(1, &funnum);
+                                  glTexImage2D
+                                  glTexParameteri
+            (if they fail make funnum=0 in addition to returning false)
+      for exceptions*/
+
+      glGenTextures(1, &funnum);  //funnum = a number not currently corresponding to an image in OpenGL
+      glBindTexture(GL_TEXTURE_2D, funnum);  //we bind funnum but this texture is empty
+
+      //so load a texture (*image) into OpenGL and funnum will correspond to it because it's the currently bound texture
+      rwop=SDL_RWFromFile((Pathfinder::Image_Path+filename).c_str(),"rb");
+      if(IMG_isJPG(rwop))  //if it ain't a JPG then it's a PNG        //image->pixels is what sends the SDL image
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+      else
+         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->pixels);
+
+      //magical OpenGL stuff
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      //we are at the end of the linked list
+      try
+      {
+        imagereturn=new VaultNode;
+        if(imagehead==NULL)
+          imagehead=imagereturn;
+        else
+          temp->imagenext=imagereturn;
+
+        imagereturn->imagename=filename;
+        imagereturn->imagenum=funnum;
+        breturn=true;
+      }
+      catch(std::bad_alloc&)
+      {
+        glDeleteTextures(1,&funnum);
+      }
+    }
+    else  //if image won't load make the GLuint 0 just like glGen Textures
+    {
+      funnum=0;
+    }
+    if(image)
+      SDL_FreeSurface(image);
+  }
+  return breturn;
+}
+
+void ImageVault::Apocalypse()
+{
+   imagereturn=imagehead;
+   while(imagereturn!=NULL)
+   {
+      imagehead=imagereturn->imagenext;
+      delete imagereturn;
+      imagereturn=imagehead;
+   }
+}
+
+bool ImageVault::ImageZap(GLuint funnum)
+{
+   VaultNode *temp;
+
+   imagereturn=imagehead;
+   temp=imagehead;
+   while(imagereturn!=NULL&&imagereturn->imagenum!=funnum)
+   {
+      temp=imagereturn;  //there is no imageprev so I need temp to shadow imagenext
+      imagereturn=imagereturn->imagenext;
+   }
+
+   //if we found the image in the linked list, delete it
+   if(imagereturn!=NULL)
+   {
+      temp->imagenext=imagereturn->imagenext;
+      if(temp==imagereturn)  //if 1st node contains the image
+         imagehead=imagehead->imagenext;
+      delete imagereturn;
+      imagereturn=NULL;
+
+      return true;
+   }
+   return false;
+}
+
+std::string ImageVault::GetName(GLuint funnum)
+{
+   std::string strval;
+
+   imagereturn=imagehead;
+
+   while(imagereturn!=NULL&&imagereturn->imagenum!=funnum)
+      imagereturn=imagereturn->imagenext;
+
+   if(imagereturn!=NULL)
+      strval=imagereturn->imagename;
+
+   return strval;
+}
+
+std::string ImageVault::GetName()
+{
+   std::string strval;
+
+   if(imagereturn!=NULL)
+      strval=imagereturn->imagename;
+
+   return strval;
+}
+
+GLuint ImageVault::GetNum()
+{
+   GLuint picnum=0;
+
+   if(imagereturn!=NULL)
+      picnum=imagereturn->imagenum;
+
+   return picnum;
+}
+
+void ImageVault::Reset()
+{
+   imagereturn=imagehead;
+}
+
+bool ImageVault::End()
+{
+   if(imagereturn==NULL)
+      return true;
+   else
+      return false;
+}
+
+bool ImageVault::Next()
+{
+   if(imagereturn!=NULL)
+   {
+      imagereturn=imagereturn->imagenext;
+   }
+   if(imagereturn!=NULL)
+     return true;
+   else
+     return false;
+}

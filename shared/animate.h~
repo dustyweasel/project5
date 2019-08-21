@@ -1,0 +1,58 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower                                   *
+ *   icecubeflower@yahoo.com                                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#ifndef ANIBOX
+#define ANIBOX
+
+#include <fstream>
+#include "Picloader.h"
+#include "filechecker.h"
+
+struct Anibox
+{
+  Anibox();
+  ~Anibox();
+  void Death();
+  bool Spawnbox(std::string anifile, ImageVault &picbox);
+  void Writebox(ImageVault &picbox);
+  GLuint Getpic();
+  GLuint Getpic(int ival);
+  GLuint Swap_Pic(std::string strpic, int element, ImageVault &picbox);
+  void Update(Uint32 newticks);
+  bool Loaded();
+  std::string GetName();
+  //void SetName(std::string strval);
+  int GetType();
+  void SetType(int ival);
+  int GetSize();
+  bool SetSize(std::string strval, int ival, int newtype);
+  int GetLoop();
+
+private:
+  std::string name;
+  GLuint *ipics;        //the pics
+  int isize;            //# of pics
+  int itype;            //type of anibox (useless at this point, only one type)
+  int ireturn;          //which element of ipics to return
+  Uint32 saveticks;     //time last pic was requested
+  int iloop;            //where to repeat at
+};
+
+#endif

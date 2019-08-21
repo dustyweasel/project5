@@ -1,0 +1,73 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower                                   *
+ *   icecubeflower@yahoo.com                                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+//HEY! rand() % X = 0 thru X-1
+//maybe that makes more sense than using RAND_MAX.
+
+//#ifdef HAVE_CONFIG_H
+//#include <config.h>
+//#endif
+
+#include <stdlib.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <fstream>
+#include <iostream>
+#include "icegame.h"
+
+//void init(int argc, char *argv[]);
+//void reshape(int width, int height);
+
+int main(int argc, char *argv[])
+{
+   SDL_Event event;
+   //SDL_Surface *screen;
+   Uint8 *keys;
+
+//////////////////////////////
+
+   //init(argc, argv);
+   //reshape(screen->w, screen->h);
+
+   //boombox->Playsong("Data/Songs/Atmsphere1.ogg");
+
+   GameBox overworld;  //loads images in the constructor, has to be declared AFTER SetVideoMode
+
+   while(overworld.GameOver()==false)
+   {
+      keys = SDL_GetKeyState(NULL);
+      while ( SDL_PollEvent(&event) )
+      {
+         /*switch(event.type)
+         {
+         case SDL_VIDEORESIZE:
+            screen = SDL_SetVideoMode(event.resize.w, event.resize.h, 16, SDL_OPENGL|SDL_RESIZABLE);
+            if ( screen )
+               reshape(screen->w, screen->h);
+            break;
+         }//switch(event type)*/
+         overworld.Go(event);
+      }//while SDL_PollEvent(&event)
+      overworld.Update(keys);
+   }//while not primo.done
+
+   SDL_Quit();
+   return 0;
+}

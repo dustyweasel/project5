@@ -1,0 +1,82 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower   *
+ *   icecubeflower@yahoo.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include "icegame.h"
+
+void GameBox::drawhero()
+{
+//  int ix, ij;
+
+  glBindTexture(GL_TEXTURE_2D, hero.GetPic());
+
+  if(hero.GetHurt())
+     glColor3f(float(rand())/float(RAND_MAX),float(rand())/float(RAND_MAX),float(rand())/float(RAND_MAX));
+  else
+     glColor3f(1.0f,1.0f,1.0f);
+
+  glBegin(GL_POLYGON);
+     glTexCoord2f(0,0);		glVertex3f(-hero.GetSize()*3.0f,-hero.GetSize()*3.0f,0.0);
+     glTexCoord2f(1,0);		glVertex3f(hero.GetSize()*3.0f,-hero.GetSize()*3.0f,0.0);
+     glTexCoord2f(1,1);		glVertex3f(hero.GetSize()*3.0f,hero.GetSize()*3.0f,0.0);
+     glTexCoord2f(0,1);		glVertex3f(-hero.GetSize()*3.0f,hero.GetSize()*3.0f,0.0);
+  glEnd();
+
+  #ifdef PROGRAMMER
+  if(istate==4)
+  {
+     glDisable(GL_TEXTURE_2D);
+     glBlendFunc(GL_SRC_ALPHA,GL_ONE);   //this does awesome ghost effect
+     glColor4f(0.0,0.0,1.0,1.0f);
+     glBegin(GL_POLYGON);
+        glVertex3f(-hero.GetSize(),-hero.GetSize(),0.0);
+        glVertex3f(hero.GetSize(),-hero.GetSize(),0.0);
+        glVertex3f(hero.GetSize(),hero.GetSize(),0.0);
+        glVertex3f(-hero.GetSize(),hero.GetSize(),0.0);
+     glEnd();
+     glColor4f(0.0,1.0,0.0,1.0f);
+     gluDisk(quadratic,0.0,hero.GetSize(),25,1);
+     glEnable(GL_TEXTURE_2D);
+     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+  }
+  #endif
+}
+
+void GameBox::herotranslate()
+{
+  if(subWidth<mWidth)
+    glTranslatef(float(mWidth-subWidth)/2.0f,0.0f,0.0f);
+  if(subHeight<mHeight)
+    glTranslatef(0.0f,float(mHeight-subHeight)/2.0f,0.0f);
+
+  if(fy==0)                                                                                //if map scrolled to top
+     glTranslatef(0.0,hero.GetVert(),0.0);                                                 //then draw hero at his coordinates
+  else if(fy==float(icemap->Get_Rows()*16-mHeight))                                        //else if map is scrolled to bottom
+    glTranslatef(0.0f,float(int(hero.GetVert())-((icemap->Get_Rows()*16)-mHeight)),0.0f);  //draw him at coordinates minus all top screens
+  else                                                                                     //else
+    glTranslatef(0.0f,float(mHeight/2),0.0f);                                              //draw him smack in middle
+
+
+  if(fx==0)
+     glTranslatef(hero.GetHor(),0.0,0.0);
+  else if(fx==float(icemap->Get_Columns()*16-mWidth))
+     glTranslatef(float(int(hero.GetHor())-((icemap->Get_Columns()*16)-mWidth)),0.0,0.0);
+  else
+     glTranslatef(float(mWidth/2),0.0,0.0);
+}

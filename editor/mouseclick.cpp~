@@ -1,0 +1,391 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower   *
+ *   icecubeflower@yahoo.com   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include "ice_edit.h"
+
+void EditBox::mousepush(SDL_Event &event)
+{
+   std::ifstream grabfile;
+   int ix;
+   Speckeeper cloner;
+
+   switch(istate)
+   {
+////////////////////////////////////////////////////////istate==0////////////////////////////////////////////////
+///////////////////////////////////////////////menu///////////////////////////////////////////////////////////////
+   case 0:
+      if(event.button.button==SDL_BUTTON_RIGHT)
+      {
+         istate=10;
+         SDL_ShowCursor(false);
+      }
+      //mouse wheel up
+      else if(event.button.button==4)
+      {
+         ifade=100;
+         iceout+=1;
+      }
+      //mouse wheel down
+      else if(event.button.button==5)
+      {
+         ifade=100;
+         iceout-=1;
+      }
+      break;
+   case 2:
+      break;
+/////////////////////////////////////////////////////istate==3//////////////////////////////////////////
+///////////////////////////////////////////////////create new map//////////////////////////////////////////////
+   case 3:
+     switch(event.button.button)
+     {
+     case 4:  //mouse wheel up
+       switch(istate2)
+       {
+       case 1:
+         istate3+=1;
+         break;
+       case 2:
+         istate4+=1;
+         break;
+       }
+       break;
+     case 5:  //moust wheel down
+       switch(istate2)
+       {
+       case 1:
+         istate3-=1;
+         break;
+       case 2:
+         istate4-=1;
+         break;
+       }
+       break;
+     }
+     break;
+/////////////////////////////////////////////////////istate==5//////////////////////////////////////////
+///////////////////////////////////////////////////resize//////////////////////////////////////////////
+   case 5:
+     switch(event.button.button)
+     {
+     case 4:  //mouse wheel up
+       switch(istate2)
+       {
+       case 0:
+         istate3+=1;
+         break;
+       case 1:
+         istate4+=1;
+         break;
+       }
+       break;
+     case 5:  //moust wheel down
+       switch(istate2)
+       {
+       case 0:
+         istate3-=1;
+         break;
+       case 1:
+         istate4-=1;
+         break;
+       }
+       break;
+     }
+     break;
+   case 7:
+      break;
+   case 8:
+      break;
+///////////////////////////////////////////////////istate==9//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////mouse edit///////////////////////////////////////////////////////////////
+   case 9:
+      if(event.button.button==SDL_BUTTON_RIGHT)
+      {
+         setfx();
+         setfy();
+         istate=0;
+         istate2=1;
+      }
+      else if(event.button.button==SDL_BUTTON_LEFT)
+      {
+         istate=10;
+      }
+      break;
+///////////////////////////////////////////////////istate==10//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////mouse///////////////////////////////////////////////////////////////
+   case 10:
+      if(event.button.button==SDL_BUTTON_RIGHT)
+      {
+         setfx();
+         setfy();
+         istate=0;
+         istate2=1;
+      }
+      else if(event.button.button==SDL_BUTTON_LEFT)
+      {
+         savecolor(false);
+         ifade=100;
+         istate=9;
+      }
+      //mouse wheel up
+      else if(event.button.button==4)
+      {
+         ifade=100;
+         iceout+=1;
+      }
+      //mouse wheel down
+      else if(event.button.button==5)
+      {
+         ifade=100;
+         iceout-=1;
+      }
+      break;
+   case 11:
+      break;
+///////////////////////////////////////////////////istate==12//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////cave links///////////////////////////////////////////////////////////////
+   case 12:
+      //mouse wheel up
+      if(event.button.button==4)
+      {
+         if(icemap.GetCaveSize()>0)
+         {
+            cloner=icemap.GetCaveNode();
+            cloner.icespec[0]+=1;
+            icemap.SetCaveNode(cloner);
+            //icemap.cave.specreturn->specval.icespec[0]+=1;
+         }
+         savecolor(false);
+      }
+      //mouse wheel down
+      else if(event.button.button==5)
+      {
+         if(icemap.GetCaveSize()>0)
+         {
+           cloner=icemap.GetCaveNode();
+           cloner.icespec[0]-=1;
+           icemap.SetCaveNode(cloner);
+           //icemap.cave.specreturn->specval.icespec[0]-=1;
+         }
+         savecolor(false);
+      }
+      break;
+///////////////////////////////////////////////////istate==13//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////pick warp point///////////////////////////////////////////////////////////////
+   case 13:
+      if(event.button.button==SDL_BUTTON_LEFT)
+      {
+         cloner=icemap.GetCaveNode();
+         cloner.icespec[1]=int(hero.GetHor())/16;
+         cloner.icespec[2]=int(hero.GetVert())/16;
+         icemap.SetCaveNode(cloner);
+         //icemap.cave.specreturn->specval.icespec[1]=int(hero.GetHor())/16;
+         //icemap.cave.specreturn->specval.icespec[2]=int(hero.GetVert())/16;
+         savecolor(false);
+         //hero.Teleport(512.0f,384.0f,0,icemap.mapgrid);  //this is going to cause problems
+         icemap.WarpGiz(hero,512.0f,384.0f,2,true);
+         //hero.fhor=512;
+         //hero.fvert=384;
+         setfx();
+         setfy();
+         istate=12;
+      }
+      break;
+///////////////////////////////////////////////////istate==14//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////edit gizmos///////////////////////////////////////////////////////////////
+   case 14:
+      //istate2: if you're picking a gizmo or editing file names
+      //istate3: which filename you're editing
+      switch(istate2)
+      {
+      case 0:  //pick a gizmo
+         break;
+      case 1:  //edit file names
+         //mouse wheel up
+         if(event.button.button==4)
+         {
+            istate3+=1;
+            if(istate3>specimen.GetMax()-1)
+              istate3=0;
+            rgcloader="";
+            rgcloader.insert(0,specimen.GetPicName(istate3,picbox),0,specimen.GetPicName(istate3,picbox).length()-strlen(".png"));
+            //rgcloader.insert(0,picbox->GetName(specimen.GetPic(istate3)),0,picbox->GetName(specimen.GetPic(istate3)).length()-strlen(".png"));
+         }
+         //mouse wheel down  (need to modify like wheel up if more gizmo files added)
+         else if(event.button.button==5)
+         {
+            istate3-=1;
+            if(istate3<0)
+              istate3=specimen.GetMax()-1;
+            rgcloader="";
+            rgcloader.insert(0,picbox.GetName(specimen.GetPic(istate3)),0,picbox.GetName(specimen.GetPic(istate3)).length()-strlen(".png"));
+         }
+         break;
+      case 2:  //pick a gizmo
+         //mouse wheel up
+         if(event.button.button==4)
+         {
+            if(istate3<IGIZ-1)
+               istate3+=1;
+            else
+               istate3=0;
+         }
+         //mouse wheel down
+         else if(event.button.button==5)
+         {
+            if(istate3>0)
+               istate3-=1;
+            else
+               istate3=IGIZ-1;
+         }
+         break;
+      case 3:  //pick a gizmo
+         //mouse wheel up
+         if(event.button.button==4)
+         {
+            istate3+=1;
+            if(istate3>=SOUNDTOTAL)
+              istate3=0;
+            rgcloader="";
+            rgcloader.insert(0,specimen.GetSoundName(istate3),0,specimen.GetSoundName(istate3).length()-strlen(".wav"));
+         }
+         //mouse wheel down
+         else if(event.button.button==5)
+         {
+            istate3-=1;
+            if(istate3<0)
+               istate3=SOUNDTOTAL-1;
+            rgcloader="";
+            rgcloader.insert(0,specimen.GetSoundName(istate3),0,specimen.GetSoundName(istate3).length()-strlen(".wav"));
+         }
+         break;
+      }
+      break;
+///////////////////////////////////////////////////istate==15//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////add gizmos///////////////////////////////////////////////////////////////
+   case 15:
+      savecolor(false);
+      //mouse wheel up
+      if(event.button.button==4)
+        icemap.SetSpawnType(icemap.GetSpawnType()+1);
+      //mouse wheel down
+      else if(event.button.button==5)
+        icemap.SetSpawnType(icemap.GetSpawnType()-1);
+      break;
+///////////////////////////////////////////////////istate==16//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////pick spawn point///////////////////////////////////////////////////////////////
+   case 16:
+      if(event.button.button==SDL_BUTTON_LEFT)
+      {
+         //icemap.monsterbox.GizTaxi(istate2);
+         //icemap.monsterbox.gizreturn->giz->ihor=hero.fhor;
+         //icemap.monsterbox.gizreturn->giz->ivert=hero.fvert;
+         icemap.MonsterTaxi(istate2);  //drawgiz messes with gizreturn
+         icemap.WarpMonster(hero.GetHor(),hero.GetVert());
+
+
+         savecolor(false);
+         setfx();
+         setfy();
+         istate=15;
+      }
+      break;
+///////////////////////////////////////////////////istate==17//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////add layers///////////////////////////////////////////////////////////////
+   case 17:
+      //mouse wheel up
+ /*     if(event.button.button==4)
+      {
+         icemap.layerbox[istate2].icespec[0]+=1;
+         savecolor(false);
+      }
+      else if(event.button.button==5)
+      {
+         icemap.layerbox[istate2].icespec[0]-=1;
+         savecolor(false);
+      }
+      switch(icemap.layerbox[istate2].icespec[0])
+      {
+      case 0:
+//         extract(icemap.animap[istate2].name,rgcloader,strlen("Data/Anibox/"));
+         break;
+      default:
+         //extract(icemap.layerbox[istate2].name,rgcloader,strlen("Data/Images/"));
+         break;
+      }*/
+      break;
+///////////////////////////////////////////////////istate==18//////////////////////////////////////////////////////////////
+///////////////////////////////////////////////edit anibox's///////////////////////////////////////////////////////////////
+   case 18:
+      //istate2: if you're picking an anibox or editing file names
+      //istate3: which filename you're editing
+      switch(istate2)
+      {
+      case 0:  //pick an anibox
+         break;
+      case 1:  //edit file names
+         //mouse wheel up
+         if(event.button.button==4)
+         {
+            istate3+=1;
+            if(istate3>anitest.GetSize()-1)
+               istate3=0;
+           rgcloader="";
+           rgcloader.insert(0,picbox.GetName(anitest.Getpic(istate3)),0,picbox.GetName(anitest.Getpic(istate3)).length()-strlen(".jpg"));
+         }
+         //mouse wheel down
+         else if(event.button.button==5)
+         {
+           istate3-=1;
+           if(istate3<0)
+             istate3=anitest.GetSize()-1;
+           rgcloader="";
+           rgcloader.insert(0,picbox.GetName(anitest.Getpic(istate3)),0,picbox.GetName(anitest.Getpic(istate3)).length()-strlen(".jpg"));
+           //rgcloader.resize(rgcloader.length()-4);
+         }
+         break;
+      case 2:          //choose type
+         //mouse wheel up
+         if(event.button.button==4)
+           istate4+=1;
+         //mouse wheel down
+         else if(event.button.button==5)
+           istate4-=1;
+         break;
+      case 3:         //choose # of images
+         //mouse wheel up
+         if(event.button.button==4)
+           istate3+=1;
+         //mouse wheel down
+         else if(event.button.button==5)
+           istate3-=1;
+         break;
+      case 4:         //choose loop #
+         //mouse wheel up
+         if(event.button.button==4)
+           anitest.SetLoop(anitest.GetLoop()+1);
+         //mouse wheel down
+         else if(event.button.button==5)
+           anitest.SetLoop(anitest.GetLoop()-1);
+         break;
+      }
+      break;
+   }
+}

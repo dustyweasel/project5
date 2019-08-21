@@ -1,0 +1,145 @@
+/***************************************************************************
+ *   Copyright (C) 2007 by icecubeflower                                   *
+ *   icecubeflower@yahoo.com                                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#ifndef MAPBOX
+#define MAPBOX
+
+#define LAYERMAX 2
+#define ANILAYER 2
+
+#include "Gizbox.h"
+#include "animate.h"
+#include "SpecBox.h"
+#include "Picstack.h"
+
+struct MapBox
+{
+  MapBox();
+  ~MapBox();
+
+  //mess with MapBox
+  void Apocalypse();
+  bool Loadmap(std::string strmapfile, bool bedit, ImageVault &picbox);
+  void Morph(int irow, int icol);
+  bool Writemap(ImageVault &picbox);
+  std::string GetSideLink(int ival);
+  bool SetSideLink(int ival, std::string strval);
+  bool Loaded();
+  bool Rename(std::string strval, ImageVault &picbox);
+  std::string GetName();
+  void SetSong(std::string name);
+  std::string GetSong();
+  bool Music(AudioBox &boombox);
+
+  //mess with layers
+  GLuint GetLayer(int ival);
+  std::string GetLayerName(int ival, ImageVault &picbox);
+  GLuint LoadLayer(std::string strfile, ImageVault &picbox, int ival);
+  GLuint KillLayer(int ival);
+
+  //pass a Gizmo, mess with its internal functions (which usually need private MapBox members)
+  bool WarpGiz(Gizmo &player, float x, float y, int iface, bool bcenter);
+  bool WarpGiz(Gizmo &player, Speckeeper &specval, bool bcenter);
+  Iceblock Gizmove(Gizmo &player, int idirection, Uint32 history);
+  Iceblock Gizrun(Gizmo &player, int idirection, Uint32 history);
+  Gizmo* gizupdate(Gizmo *self,Gizmo *enemy, ImageVault &picbox, AudioBox &boombox, Uint32 history);
+  void BombDrop(Gizmo &player, AudioBox &boombox);  //could also be grouped with Bombs I suppose
+
+  //mess with cave links
+  int GetCaveSize();
+  void ResetCave();
+  Speckeeper GetCaveNode();
+  bool SetCaveNode(Speckeeper &specimen);
+  bool ZapCaveNode(int ival);
+  bool LoadCaveNode(Speckeeper &specimen);
+  bool ChooseCaveNode(int ival);
+  void KillCave();
+
+  //mess with monster list
+  void ResetMonsters();
+  bool MonsterEnd();
+  int MonsterHor();
+  int MonsterVert();
+  GLuint GetMonsterPic();
+  GLuint GetMonsterPic(int ival);
+  int GetMonsterType();
+  int GetSpawnType();
+  bool SetSpawnType(int ival);
+  bool ZapGiz();
+  void NextMonster();
+  bool MonsterHurt();
+  int GetMonsterBoxSize();      //number of monsters, not size of monster
+  float GetMonsterSpin();
+  float GetMonsterSize();
+  void UpdateMonsters(Gizmo *self, Uint32 history, ImageVault &picbox, AudioBox &boombox);
+  bool MonsterTaxi(int ival);
+  std::string GetMonsterName();
+  bool InsertMonster(std::string strval, int hor, int vert, int icopy, bool bhead, ImageVault &picbox);
+  bool WarpMonster(float x, float y);
+  void NukeMonsters();
+  bool Clear();  //returns true if all monsters are dead  (get rid of this function)
+
+  //mess with splatterbox
+  void UpdateSplatter(Gizmo *self, Uint32 history, ImageVault &picbox, AudioBox &boombox);
+
+  //mess with IceMatrix
+  int Get_Rows();
+  int Get_Columns();
+  Iceblock Grab_Block(int y, int x);
+  bool Set_Element(float y, float x, Iceblock iceval);
+  void KillMatrix();
+
+  //mess with anilayers
+  bool GotAniLayer(int ival);  //0=waterlayer 1=skylayer
+  GLuint GetAniLayerPic(int ival);
+  std::string GetAniLayerName(int ival);
+  void UpdateAniLayers(Uint32 elticko);
+  bool AniLayerSpawn(std::string anifile, ImageVault &picbox, int ival);
+  void AniLayerDeath(int ival);
+  int AniLayerType(int ival);
+
+  //mess with Bombs
+  void ResetAttackNodes();
+  bool AttackNodeEnd();
+  float GetAttackHor();
+  float GetAttackVert();
+  float GetAttackSize();
+  void NextAttackNode();
+
+  //paint
+  void drawgiz(int ilayer, float fx, float fy, bool highlight);
+  void drawstore();
+
+private:
+  Icematrix mapgrid;
+  std::string mapname;  //this isn't in the file, it's the actual filename
+  std::string link[4];  //0=up 1=right 2=down 3=left
+  SpecBox cave;
+  GizBox monsterbox;
+  GizBox splatterbox;
+  PicBox monsterstore;
+  BombBox attacknodes;
+  std::string song;
+
+  GLuint layer[2];     //0=layer1  1=layer2
+  Anibox anilayer[2];  //0=water layer 1=skylayer
+};
+
+#endif
